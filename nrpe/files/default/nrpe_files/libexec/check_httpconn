@@ -1,0 +1,31 @@
+#!/bin/bash
+# my simple script to check HTTP connection counts
+# result format: [port_80_count],ESTABLISHED_count,TIMEWAIT_count
+
+WARN="400"
+CRIT="600"
+
+[ -f ~/httpconn ] && sudo rm -f ~/httpconn
+netstat -an | grep ":80 " > ~/httpconn
+
+CONNS=`cat ~/httpconn |wc -l`
+ESTABLISHED=`grep "ESTABLISHED" ~/httpconn |wc -l`
+TIME_WAIT=`grep "TIME_WAIT" ~/httpconn |wc -l`
+
+if test "$CONNS"
+then
+        if test "$CONNS" -ge "$CRIT"
+        then
+                echo "CRITICAL - HTTP connections have excceeded $CRIT. Current connections: [$CONNS],$ESTABLISHED,$TIME_WAIT"
+                exit 2
+        elif test "$CONNS" -ge "$WARN" && "$CONNS" -lt "$CRIT"
+        then
+                echo "WARNING - HTTP connections have excceeded $WARN. Current connections: [$CONNS],$ESTABLISHED,$TIME_WAIT"
+                exit 1
+        else
+                echo "HTTP connections OK. Current connections: [$CONNS],$ESTABLISHED,$TIME_WAIT"
+        fi
+else
+        echo "Unable to count connections to port 80."
+        exit 3
+fi
