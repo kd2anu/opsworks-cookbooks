@@ -14,6 +14,11 @@
 include_recipe 'tomcat::service'
 
 node[:deploy].each do |application, deploy|
+  if application != node[:opsworks][:instance][:hostname].chop
+    puts "=== Skip generating context file for undesired module: #{application} ==="
+    next
+  end
+
 #  context_name = deploy[:document_root].nil? ? application : deploy[:document_root]
   context_name = application
   puts "CONTEXT_NAME IS: #{context_name}"
