@@ -1,7 +1,12 @@
 include_recipe 'tomcat::service'
 
 node[:deploy].each do |application, deploy|
-  if application != node[:opsworks][:instance][:hostname].chop || application != 'root'
+  if application != node[:opsworks][:instance][:hostname].chop
+    puts "=== Skip generating WAR log file for undesired module: #{application} ==="
+    next
+  end
+
+  if application != "root"
     puts "=== Skip generating WAR log file for undesired module: #{application} ==="
     next
   end
