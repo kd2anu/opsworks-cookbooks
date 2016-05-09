@@ -33,6 +33,11 @@ node[:deploy].each do |application, deploy|
     webapp_name = application
   end
 
+  if webapp_name != node[:opsworks][:instance][:hostname]
+    puts "=== Skip deploying undesired module: #{webapp_name} ==="
+    next
+  end
+
   opsworks_deploy_dir do
     user deploy[:user]
     group deploy[:group]
