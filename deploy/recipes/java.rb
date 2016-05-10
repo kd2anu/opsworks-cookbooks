@@ -33,12 +33,9 @@ node[:deploy].each do |application, deploy|
     webapp_name = application
   end
 
-  if webapp_name != node[:opsworks][:instance][:hostname].chop
-    puts "=== Skip deploying undesired module: #{webapp_name} ==="
-    next
-  end
-
-  if webapp_name != "ROOT"
+  if webapp_name == node[:opsworks][:instance][:hostname].chop || webapp_name == "ROOT"
+    puts "=== Deploying #{webapp_name} ==="
+  else
     puts "=== Skip deploying undesired module: #{webapp_name} ==="
     next
   end
