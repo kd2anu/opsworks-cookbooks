@@ -42,7 +42,8 @@
 # Use JAVA_OPTS to set java.library.path for libtcnative.so
 #JAVA_OPTS="-Djava.library.path=/usr/lib"
 
-JAVA_OPTS="${JAVA_OPTS} <%= node['tomcat']['java_opts'] %>"
+#JAVA_OPTS="${JAVA_OPTS} <%= node['tomcat']['java_opts'] %>"
+JAVA_OPTS="${JAVA_OPTS} <%= node['deploy'][node[:opsworks][:instance][:hostname].chop]['environment']['JAVA_OPTS'] %>"
 
 # What user should run tomcat
 #TOMCAT_USER="tomcat"
