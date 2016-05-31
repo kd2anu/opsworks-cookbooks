@@ -3,7 +3,7 @@ cookbook_file "/root/assigndomain.py" do
   mode 0500
 end
 
-params = "dev"+node[:opsworks][:instance][:hostname].chop+".dcoupon.com "+node[:access_key]+" "+node[:secret_key]
+params = "dev"+node[:opsworks][:instance][:hostname].chop+" "+node[:dnszone]+" "+node[:access_key]+" "+node[:secret_key]
 puts #{params}
 
 execute "assigndomain" do
