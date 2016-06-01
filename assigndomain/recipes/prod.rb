@@ -1,12 +1,12 @@
-cookbook_file "/root/assigndomain.py" do
+cookbook_file "/opt/assigndomain.py" do
   source "assigndomain.py"
   mode 0500
 end
 
-params = node[:opsworks][:instance][:hostname].chop+" "+node[:dnszone]+" "+node[:access_key]+" "+node[:secret_key]
+params = node[:opsworks][:instance][:hostname]+" "+node[:dnszone]+" "+node[:access_key]+" "+node[:secret_key]
 #puts "#{params}"
 
 execute "assigndomain" do
-  command "/root/assigndomain.py #{params}"
+  command "/opt/assigndomain.py #{params}"
   user "root"
 end
