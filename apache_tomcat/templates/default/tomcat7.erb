@@ -6,8 +6,6 @@ if [ -f /etc/sysconfig/tomcat7 ]; then
 	. /etc/sysconfig/tomcat7
 fi
 
-export JAVA_OPTS="<%= node['deploy'][node[:opsworks][:instance][:hostname].chop]['environment']['JAVA_OPTS'] %>"
-
 case "$1" in
 start
         echo "Starting tomcat7."
