@@ -1,0 +1,32 @@
+#!/bin/bash
+# chkconfig: 345 79 80
+# description: this script takes care of starting and stopping Tomcat
+
+if [ -f /etc/sysconfig/tomcat7 ]; then
+	. /etc/sysconfig/tomcat7
+fi
+
+export JAVA_OPTS="<%= node['deploy'][node[:opsworks][:instance][:hostname].chop]['environment']['JAVA_OPTS'] %>"
+
+case "$1" in
+start
+        echo "Starting tomcat7."
+        <%= node["tomcat"]["install_dir"] %>/bin/startup.sh
+        ;;
+restart)
+        echo "Retarting tomcat7."
+        <%= node["tomcat"]["install_dir"] %>/bin/shutdown.sh
+        sleep 10
+        <%= node["tomcat"]["install_dir"] %>/bin/startup.sh
+        ;;
+stop)
+        echo "Stopping tomcat7"
+        <%= node["tomcat"]["install_dir"] %>/bin/shutdown.sh
+        ;;
+*)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
