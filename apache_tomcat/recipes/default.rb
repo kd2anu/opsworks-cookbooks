@@ -12,7 +12,8 @@ script "Download Apache Tomcat #{direct_download_version}" do
   user "#{tomcat_user}"
   cwd "/opt"
   code <<-EOH
-  wget "#{direct_download_url}" -O "/opt/apache-tomcat-#{direct_download_version}.tar.gz"
+  wget "#{direct_download_url}" -O "/opt/apache-tomcat-#{direct_download_version}.tar.gz";
+  mkdir -p "#{install_dir}"
   EOH
 end
 
@@ -20,7 +21,7 @@ execute "Unzip Apache Tomcat #{direct_download_version}" do
   user "#{tomcat_user}"
   group "#{tomcat_group}"
   cwd "#{install_dir}"
-  command "mkdir -p #{install_dir}; tar zxf /opt/apache-tomcat-#{direct_download_version}.tar.gz -C #{install_dir} --strip-components=1"
+  command "tar zxf /opt/apache-tomcat-#{direct_download_version}.tar.gz -C #{install_dir} --strip-components=1"
   action :run
 end
 
