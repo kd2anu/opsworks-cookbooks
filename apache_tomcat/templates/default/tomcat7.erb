@@ -7,7 +7,7 @@ if [ -f /etc/sysconfig/tomcat7 ]; then
 fi
 
 case "$1" in
-start
+start)
         echo "Starting tomcat7."
         <%= node["tomcat"]["install_dir"] %>/bin/startup.sh
         ;;
