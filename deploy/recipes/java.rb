@@ -77,5 +77,5 @@ node[:deploy].each do |application, deploy|
   end
 end
 
-include_recipe 'opsworks_java::web_app'
+#include_recipe 'opsworks_java::web_app'
 include_recipe 'opsworks_java::context'
