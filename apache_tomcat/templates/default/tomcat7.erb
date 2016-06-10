@@ -1,30 +1,109 @@
 #!/bin/bash
-# chkconfig: 345 79 80
-# description: this script takes care of starting and stopping Tomcat
+#
+# tomcat7     This shell script takes care of starting and stopping Tomcat
+#
+# chkconfig: - 80 20
+#
+### BEGIN INIT INFO
+# Provides: tomcat7
+# Required-Start: $network $syslog
+# Required-Stop: $network $syslog
+# Default-Start:
+# Default-Stop:
+# Description: Release implementation for Servlet 2.5 and JSP 2.1
+# Short-Description: start and stop tomcat
+### END INIT INFO
+
+. /etc/rc.d/init.d/functions
 
 if [ -f /etc/sysconfig/tomcat7 ]; then
-	. /etc/sysconfig/tomcat7
+        . /etc/sysconfig/tomcat7
 fi
 
-case "$1" in
-start)
-        echo "Starting tomcat7."
-        <%= node["tomcat"]["install_dir"] %>/bin/startup.sh
-        ;;
-restart)
-        echo "Retarting tomcat7."
-        <%= node["tomcat"]["install_dir"] %>/bin/shutdown.sh
-        sleep 10
-        <%= node["tomcat"]["install_dir"] %>/bin/startup.sh
-        ;;
-stop)
-        echo "Stopping tomcat7"
-        <%= node["tomcat"]["install_dir"] %>/bin/shutdown.sh
-        ;;
-*)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
-        ;;
-esac
+CATALINA_HOME=/usr/share/tomcat7
+SHUTDOWN_WAIT=20
 
+tomcat_pid() {
+        [ -f $CATALINA_HOME/bin/catalina.pid ] && cat $CATALINA_HOME/bin/catalina.pid
+}
+
+start() {
+        pid=$(tomcat_pid)
+        if [ -n "$pid" ]
+        then
+                echo -n "Tomcat is already running (pid: "
+                $SETCOLOR_SUCCESS
+                echo -n $pid
+                $SETCOLOR_NORMAL
+                echo ")"
+        else
+                # Start tomcat
+                echo "Starting tomcat"
+                ulimit -n 100000
+                umask 007
+                /bin/su -p -s /bin/sh root $CATALINA_HOME/bin/startup.sh
+                echo_success
+        fi
+
+        return 0
+}
+
+stop() {
+        pid=$(tomcat_pid)
+        if [ -n "$pid" ]
+        then
+                echo "Stoping Tomcat"
+                /bin/su -p -s /bin/sh root $CATALINA_HOME/bin/shutdown.sh
+
+                let kwait=$SHUTDOWN_WAIT
+                count=0;
+                until [ `ps -p $pid | grep -c $pid` = '0' ] || [ $count -gt $kwait ]
+                do
+                        echo -n -e "\nwaiting for processes to exit";
+                        sleep 1
+                        let count=$count+1;
+                done
+                echo_success
+
+                if [ $count -gt $kwait ]; then
+                        echo -n -e "\nkilling processes which didn't stop after $SHUTDOWN_WAIT seconds"
+                        kill -9 $pid
+                fi
+                else
+                echo "Tomcat is not running"
+                echo_failure && exit 1
+        fi
+
+        return 0
+}
+
+case $1 in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+                start
+                ;;
+        status)
+                pid=$(tomcat_pid)
+                if [ -n "$pid" ]
+                then
+                        echo -n "Tomcat is running with pid: "
+                        $SETCOLOR_SUCCESS
+                        echo $pid
+                        $SETCOLOR_NORMAL
+                else
+                        echo "Tomcat is not running"
+                        echo_failure && exit 1
+                fi
+                ;;
+        *)
+                echo "Usage: $0 {start|stop|restart|status}"
+                exit 1
+                ;;
+esac
 exit 0
