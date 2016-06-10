@@ -22,6 +22,8 @@ node[:deploy].each do |application, deploy|
     ''
   end
 
+  FileUtils.mkdir_p node['opsworks_java'][node['opsworks_java']['java_app_server']]['context_dir']
+
   template "context file for #{webapp_name}" do
     path ::File.join(node['opsworks_java'][node['opsworks_java']['java_app_server']]['context_dir'], "#{webapp_name}.xml")
     source 'webapp_context.xml.erb'
