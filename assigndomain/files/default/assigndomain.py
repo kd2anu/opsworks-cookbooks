@@ -15,7 +15,12 @@ zone = conn.get_zone(sys.argv[2])
 
 if zone.find_records(sys.argv[1]+'.'+sys.argv[2],'A',desired=1):
     print "A record exists, updating " + sys.argv[1] + "." + sys.argv[2] + " to " + myip + " ..."
-    zone.update_a(sys.argv[1].lower()+"."+sys.argv[2].lower(),myip,300)
+    try:
+        zone.delete_a(sys.argv[1].lower()+"."+sys.argv[2].lower())
+    except Exception as err:
+        print str(err)
+        sys.exit(1)
+    zone.add_a(sys.argv[1].lower()+"."+sys.argv[2].lower(),myip,300)
 else:
     print "A record doesn't exist, creating one ..."
     zone.add_a(sys.argv[1].lower()+"."+sys.argv[2].lower(),myip,300)
