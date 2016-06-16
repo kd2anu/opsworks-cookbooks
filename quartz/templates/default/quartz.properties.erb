@@ -2,6 +2,6 @@ org.quartz.scheduler.instanceName = MyScheduler
 org.quartz.threadPool.threadCount = 1
 org.quartz.jobStore.class =org.quartz.simpl.RAMJobStore
 #cada hora
-time.expresion =0 <%=@minute %> 0/1 1/1 * ? *
+time.expresion =0 <%= @minute %> 0/1 1/1 * ? *
 #todos los dias a las 10
 #time.expresion =0 0 10 1/1 * ? *
