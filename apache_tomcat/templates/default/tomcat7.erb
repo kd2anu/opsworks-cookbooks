@@ -20,7 +20,7 @@ if [ -f /etc/sysconfig/tomcat7 ]; then
         . /etc/sysconfig/tomcat7
 fi
 
-CATALINA_HOME=/usr/share/tomcat7
+CATALINA_HOME=<%=node['tomcat']['install_dir']%>
 SHUTDOWN_WAIT=20
 
 tomcat_pid() {

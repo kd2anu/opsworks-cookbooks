@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# ONLINE
+# PUT THIS MACHINE ONLINE
+
+# THE LOAD BALANCER LOOKS FOR A HEALTHCHECK FILE TO SEE IF THINGS
+# ARE OK.  IF IT'S NOT THERE, THE INSTANCE IS REMOVED FROM THE LOADBALANCER
+
+# FIRST, SEE HOW WE'RE BEING CALLED... online | offline
+
+if test "$#" == "1"
+then
+        LB="$1"
+        # echo "LOADBALANCER $LB"
+fi
+
+ACTION=`basename $0`
+BASES="<%=node['tomcat']['install_dir']%>/webapps/ROOT"
+for BASE in $BASES
+do
+if test "$LB"
+then
+        ON="$BASE/healthcheck-${LB}.html"
+        OFF="$BASE/healthcheck-${LB}-OFFLINE.html"
+else
+        ON="$BASE/healthcheck.html"
+        OFF="$BASE/healthcheck-OFFLINE.html"
+fi
+
+if test "$ACTION" = "online"
+then
+        if ! test -f "$ON"
+        then
+                echo "Bringing instance ONLINE... will be added to loadbalancers"
+                if test -f "$OFF"
+                then
+                        mv $OFF $ON
+                else
+                        echo "<html><body>ok</body></html>" > $ON
+                fi
+        fi
+fi
+
+if test "$ACTION" = "offline"
+then
+        if test -f "$ON"
+        then
+                echo "Putting instance OFFLINE... will be removed from loadbalancers"
+                mv $ON $OFF
+        fi
+fi
+done
