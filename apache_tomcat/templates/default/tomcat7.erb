@@ -68,6 +68,7 @@ stop() {
                 if [ $count -gt $kwait ]; then
                         echo -n -e "\nkilling processes which didn't stop after $SHUTDOWN_WAIT seconds"
                         kill -9 $pid
+			rm -rf $CATALINA_HOME/bin/catalina.pid
                 fi
                 else
                 echo "Tomcat is not running"
