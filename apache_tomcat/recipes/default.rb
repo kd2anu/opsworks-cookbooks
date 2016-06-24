@@ -3,6 +3,7 @@ direct_download_url= "http://archive.apache.org/dist/tomcat/tomcat-7/v"+"#{direc
 
 install_dir=node['tomcat']['install_dir']
 webapps_base_dir="#{install_dir}/webapps"
+conf_dir="#{install_dir}/conf"
 
 tomcat_user=node['tomcat']['tomcat_user']
 tomcat_group=node['tomcat']['tomcat_group']
@@ -23,6 +24,16 @@ execute "Unzip Apache Tomcat #{direct_download_version}" do
   cwd "#{install_dir}"
   command "tar zxf /opt/apache-tomcat-#{direct_download_version}.tar.gz -C #{install_dir} --strip-components=1"
   action :run
+end
+
+# Disable autoDeploy:
+if File.exist?("#{conf_dir}/server.xml")
+  newcontent=File.read("#{conf_dir}/server.xml").gsub(/autoDeploy=\"true\"/, "autoDeploy=\"false\"")
+  File.open("#{conf_dir}/server.xml.new", "w"){|newconf| newconf.puts newcontent }
+  File.delete("#{conf_dir}/server.xml")
+  File.rename("#{conf_dir}/server.xml.new","#{conf_dir}/server.xml")
+else
+  puts "  #{conf_dir}/server.xml does not exist, skip disabling autoDeploy block."
 end
 
 template "#{install_dir}/bin/setenv.sh" do
