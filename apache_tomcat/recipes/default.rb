@@ -26,16 +26,6 @@ execute "Unzip Apache Tomcat #{direct_download_version}" do
   action :run
 end
 
-# Disable autoDeploy:
-if File.exist?("#{conf_dir}/server.xml")
-  newcontent=File.read("#{conf_dir}/server.xml").gsub(/autoDeploy=\"true\"/, "autoDeploy=\"false\"")
-  File.open("#{conf_dir}/server.xml.new", "w"){|newconf| newconf.puts newcontent }
-  File.delete("#{conf_dir}/server.xml")
-  File.rename("#{conf_dir}/server.xml.new","#{conf_dir}/server.xml")
-else
-  puts "  #{conf_dir}/server.xml does not exist, skip disabling autoDeploy block."
-end
-
 template "#{install_dir}/bin/setenv.sh" do
   source "setenv.sh.erb"
   owner "#{tomcat_user}"
@@ -63,3 +53,16 @@ ruby_block 'remove all default webapp' do
     end
   end
 end
+
+# Disable autoDeploy:
+if File.exist?("#{conf_dir}/server.xml")
+  puts "Disable autoDeploy in server.xml"
+  newcontent=File.read("#{conf_dir}/server.xml").gsub(/autoDeploy=\"true\"/, "autoDeploy=\"false\"")
+  File.open("#{conf_dir}/server.xml.new", "w"){|newconf| newconf.puts newcontent }
+  File.delete("#{conf_dir}/server.xml")
+  File.rename("#{conf_dir}/server.xml.new","#{conf_dir}/server.xml")
+else
+  puts "  #{conf_dir}/server.xml does not exist, skip disabling autoDeploy block."
+end
+
+
