@@ -14,6 +14,9 @@ remote_directory "/usr/local/nagios" do
   owner "nrpe"
   group "nrpe"
   mode "0755"
+  files_owner "nrpe"
+  files_group "nrpe"
+  files_mode "0755"
   recursive true
   action :create_if_missing
 end
