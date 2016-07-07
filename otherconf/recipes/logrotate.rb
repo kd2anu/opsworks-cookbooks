@@ -5,7 +5,7 @@ apps=['api2pos','api2campaignmgr','campaignmgr','api2coupons','mycoupons']
 template "/etc/crontab" do
   source "crontab.erb"
   owner "root"
-  mode "0744"
+  mode "0644"
 end
 
 directory "#{conf_dir}" do
