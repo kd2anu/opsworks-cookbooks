@@ -1,6 +1,6 @@
 conf_dir="/opt/logrotate.d"
 number=node[:opsworks][:instance][:hostname][-1,1]
-apps=['api2pos','api2campaignmgr','campaignmgr','api2coupons','mycoupons']
+apps=['api2POS','api2campaignmgr','campaignmgr','api2coupons','mycoupons']
 
 template "/etc/crontab" do
   source "crontab.erb"
@@ -16,13 +16,19 @@ directory "#{conf_dir}" do
 end
 
 apps.each do |eachapp|
+  if eachapp == "api2coupons" || eachapp == "api2POS" || eachapp == "settlement"
+    contractornumber="1"
+  elsif eachapp == "api2campaignmgr" || eachapp == "campaignmgr" || eachapp == "mycoupons"
+    contractornumber="2"
+  end
   template "#{conf_dir}/#{eachapp}.conf" do
     source "prod.conf.erb"
     owner "root"
     mode "0744"
     variables({
       :APPNAME => "#{eachapp}",
-      :NUMBER => "#{number}"
+      :NUMBER => "#{number}",
+      :CONTRACTORNUMBER => "#{contractornumber}"
     })
   end
 end
