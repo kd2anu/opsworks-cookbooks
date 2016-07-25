@@ -1,0 +1,33 @@
+<VirtualHost *:80>
+  ServerName myapp.com
+  DocumentRoot /srv/www/my_app/public/
+
+  <Directory /srv/www/my_app/public/>
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  <Directory ~ "\.svn">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  <Directory ~ "\.git">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  LogLevel info
+  ErrorLog /var/log/apache2/my_app-error.log
+  CustomLog /var/log/apache2/my_app-access.log combined
+  CustomLog /var/log/apache2/my_app-ganglia.log ganglia
+
+  FileETag none
+
+  RewriteEngine On
+  IncludeOptional /etc/apache2/sites-available/my_app.conf.d/rewrite*
+
+  IncludeOptional /etc/apache2/sites-available/my_app.conf.d/local*
+</VirtualHost>
