@@ -21,6 +21,14 @@ remote_directory "/usr/local/nagios" do
   action :create_if_missing
 end
 
+file "/etc/sudoers.d/nrpe" do
+  content "nrpe ALL=NOPASSWD:/usr/local/nagios/libexec/check_httpconn"
+  mode "0440"
+  owner "root"
+  group "root"
+  action :create_if_missing
+end
+
 service "nrpe" do
   start_command "sudo service nrpe start" 
   supports :status => true, :restart => true, :reload => true
