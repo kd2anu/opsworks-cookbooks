@@ -22,7 +22,7 @@ remote_directory "/usr/local/nagios" do
 end
 
 file "/etc/sudoers.d/nrpe" do
-  content "nrpe ALL=NOPASSWD:/usr/local/nagios/libexec/check_httpconn"
+  content "nrpe ALL=(ALL) NOPASSWD:/usr/local/nagios/libexec/check_httpconn\n"
   mode "0440"
   owner "root"
   group "root"
