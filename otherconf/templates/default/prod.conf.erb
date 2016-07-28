@@ -1,5 +1,6 @@
 /var/log/coupons/<%=@APPNAME%>.log {
         notifempty
+	missingok
         copytruncate
         start 1
         postrotate
