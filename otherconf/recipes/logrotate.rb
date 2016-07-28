@@ -1,3 +1,23 @@
+# Rotate user mails:
+file '/etc/logrotate.d/mails' do
+    content '/var/spool/mail/* {
+	rotate 5
+	dateext
+	dateformat -%Y%m%d
+	compress
+	missingok
+	notifempty
+	size 2M
+	copytruncate
+	sharedscripts
+}
+'
+    mode '0644'
+    owner 'root'
+    group 'root'
+end
+
+# Rotate war logs:
 conf_dir="/opt/logrotate.d"
 number=node[:opsworks][:instance][:hostname][-1,1]
 apps=['api2POS','api2campaignmgr','campaignmgr','api2coupons','mycoupons']
