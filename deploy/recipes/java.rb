@@ -1,4 +1,5 @@
 include_recipe 'deploy'
+include_recipe 'apache_tomcat'
 
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'java'
