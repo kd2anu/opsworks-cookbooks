@@ -1,5 +1,11 @@
 include_recipe 'deploy'
-include_recipe 'apache_tomcat'
+
+# Placeholder for tomcat7 service
+service "node['opsworks_java']['tomcat']['service_name']" do
+  provider      Chef::Provider::Service::Init::Redhat
+  supports :restart => true
+  action        :nothing
+end
 
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'java'
