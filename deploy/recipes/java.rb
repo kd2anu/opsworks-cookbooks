@@ -2,9 +2,9 @@ include_recipe 'deploy'
 
 # Placeholder for tomcat7 service
 service "node['opsworks_java']['tomcat']['service_name']" do
-  provider      Chef::Provider::Service::Init::Redhat
+  provider Chef::Provider::Service::Init::Redhat
   supports :restart => true
-  action        :nothing
+  action :enable
 end
 
 node[:deploy].each do |application, deploy|
