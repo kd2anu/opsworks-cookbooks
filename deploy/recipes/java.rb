@@ -78,8 +78,8 @@ node[:deploy].each do |application, deploy|
 #    notifies :restart, "service[#{node['opsworks_java']['tomcat']['service_name']}]"
 #  end
 
-  execute 'restart_tomcat7' do
-    command 'service tomcat7 restart'
+  execute "Restart #{node['opsworks_java']['tomcat']['service_name']} Service" do
+    command "service #{node['opsworks_java']['tomcat']['service_name']} restart"
   end
 end
 
