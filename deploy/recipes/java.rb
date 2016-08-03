@@ -1,12 +1,5 @@
 include_recipe 'deploy'
 
-# Placeholder for tomcat7 service
-service "node['opsworks_java']['tomcat']['service_name']" do
-  provider Chef::Provider::Service::Init::Redhat
-  supports :restart => true
-  action :enable
-end
-
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'java'
     Chef::Log.debug("Skipping deploy::java application #{application} as it is not a Java app")
@@ -78,11 +71,15 @@ node[:deploy].each do |application, deploy|
 
   include_recipe "opsworks_java::#{node['opsworks_java']['java_app_server']}_service"
 
-  execute "trigger #{node['opsworks_java']['java_app_server']} service restart" do
-    command '/bin/true'
-    not_if { node['opsworks_java'][node['opsworks_java']['java_app_server']]['auto_deploy'].to_s == 'true' }
+#  execute "trigger #{node['opsworks_java']['java_app_server']} service restart" do
+#    command '/bin/true'
+#    not_if { node['opsworks_java'][node['opsworks_java']['java_app_server']]['auto_deploy'].to_s == 'true' }
 #   notifies :restart, "service[#{node['opsworks_java']['java_app_server']}]"
-    notifies :restart, "service[#{node['opsworks_java']['tomcat']['service_name']}]"
+#    notifies :restart, "service[#{node['opsworks_java']['tomcat']['service_name']}]"
+#  end
+
+  execute 'restart_tomcat7' do
+    command 'service tomcat7 restart'
   end
 end
 
