@@ -1,12 +1,26 @@
+# Rotate user mails:
+file '/etc/logrotate.d/mails' do
+    content '/var/spool/mail/* {
+        rotate 5
+        dateext
+        dateformat -%Y%m%d
+        compress
+        missingok
+        notifempty
+        size 2M
+        copytruncate
+        sharedscripts
+}
+'
+    mode '0644'
+    owner 'root'
+    group 'root'
+end
+
+# Rotate war logs:
 conf_dir="/opt/logrotate.d"
 number=node[:opsworks][:instance][:hostname][-1,1]
-apps=['api2POS','api2campaignmgr','campaignmgr','api2coupons','mycoupons']
-
-template "/etc/crontab" do
-  source "crontab.erb"
-  owner "root"
-  mode "0644"
-end
+webapp=node[:opsworks][:instance][:hostname].chop
 
 directory "#{conf_dir}" do
   owner "root"
@@ -15,20 +29,37 @@ directory "#{conf_dir}" do
   action :create
 end
 
-apps.each do |eachapp|
-  if eachapp == "api2coupons" || eachapp == "api2POS" || eachapp == "settlement"
-    contractornumber="1"
-  elsif eachapp == "api2campaignmgr" || eachapp == "campaignmgr" || eachapp == "mycoupons"
-    contractornumber="2"
-  end
-  template "#{conf_dir}/#{eachapp}.conf" do
-    source "dev.conf.erb"
-    owner "root"
-    mode "0744"
-    variables({
-      :APPNAME => "#{eachapp}",
-      :NUMBER => "#{number}",
-      :CONTRACTORNUMBER => "#{contractornumber}"
-    })
-  end
+if webapp == "api2coupons" || webapp == "api2pos" || webapp == "settlement"
+  contractornumber="1"
+elsif webapp == "api2campaignmgr" || webapp == "campaignmgr" || webapp == "mycoupons"
+  contractornumber="2"
+end
+
+puts "== Creating logrotate config and cronjob for #{webapp} =="
+# Create logrotate conf:
+template "#{conf_dir}/#{webapp}.conf" do
+  source "dev.conf.erb"
+  owner "root"
+  mode "0744"
+  variables({
+    :APPNAME => "#{webapp}",
+    :NUMBER => "#{number}",
+    :CONTRACTORNUMBER => "#{contractornumber}"
+  })
+end
+
+# Create catalina.out conf:
+file "#{conf_dir}/tomcat.conf" do
+  content "@daily root /usr/sbin/logrotate -vf /opt/logrotate.d/tomcat.conf 2>&1 >> /var/log/logrotate.log"
+  mode '0744'
+  owner 'root'
+  group 'root'
+end
+
+# Create cronjob:
+template "/etc/crontab" do
+  source "crontab.erb"
+  owner "root"
+  mode "0644"
+  variables({:APPNAME => "#{webapp}"})
 end

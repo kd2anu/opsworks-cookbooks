@@ -29,7 +29,7 @@ directory "#{conf_dir}" do
   action :create
 end
 
-if webapp == "api2coupons" || webapp == "api2POS" || webapp == "settlement"
+if webapp == "api2coupons" || webapp == "api2pos" || webapp == "settlement"
   contractornumber="1"
 elsif webapp == "api2campaignmgr" || webapp == "campaignmgr" || webapp == "mycoupons"
   contractornumber="2"
@@ -46,6 +46,14 @@ template "#{conf_dir}/#{webapp}.conf" do
     :NUMBER => "#{number}",
     :CONTRACTORNUMBER => "#{contractornumber}"
   })
+end
+
+# Create catalina.out conf:
+file "#{conf_dir}/tomcat.conf" do
+  content "@daily root /usr/sbin/logrotate -vf /opt/logrotate.d/tomcat.conf 2>&1 >> /var/log/logrotate.log"
+  mode '0744'
+  owner 'root'
+  group 'root'
 end
 
 # Create cronjob:
