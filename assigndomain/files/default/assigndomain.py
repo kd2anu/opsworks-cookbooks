@@ -3,7 +3,7 @@ import sys,requests
 import boto.route53
 
 if len(sys.argv) < 5 :
-        print "Usage: " + sys.argv[0] + " <subdomain> <zone> <access_key> <secret_key>"
+        print "Usage: " + sys.argv[0] + " <subdomain> <zone/domain> <access_key> <secret_key>"
         exit(1)
 
 res = requests.get('http://169.254.169.254/latest/meta-data/public-ipv4')
