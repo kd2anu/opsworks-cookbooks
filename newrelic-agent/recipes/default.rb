@@ -9,12 +9,12 @@ cookbook_file "#{install_dir}/newrelic-java-3.31.0.zip" do
 end
 
 execute 'unzip_package' do
-  command "/usr/bin/unzip #{install_dir}/newrelic-java-3.31.0.zip -d #{install_dir}/newrelic"
+  command "/usr/bin/unzip #{install_dir}/newrelic-java-3.31.0.zip -d #{install_dir}"
   cwd '/root'
-  not_if { File.exists?("#{install_dir}/newrelic-java-3.31.0.zip") }
+  only_if { File.exists?("#{install_dir}/newrelic-java-3.31.0.zip") }
 end
 
-template "#{install_dir}/newrelic.yml" do
+template "#{install_dir}/newrelic/newrelic.yml" do
   source 'newrelic.yml.erb'
   owner 'deploy'
   group 'apache'
@@ -22,16 +22,16 @@ template "#{install_dir}/newrelic.yml" do
   variables({
      :appname => "#{application}"
   })
-  not_if { File.exists?("/usr/share/tomcat7/newrelic/newrelic.yml") }
+  only_if { File.exists?("/usr/share/tomcat7/newrelic/newrelic.yml") }
 end
 
 execute 'install_newrelic_agent' do
   command "/usr/bin/java -jar newrelic.jar install"
   cwd "#{install_dir}/newrelic/"
+  only_if { File.directory?("/usr/share/tomcat7/newrelic") }
 end
 
-service 'apache_tomcat' do
+service 'tomcat7' do
   action :restart
   only_if { File.exists?("/etc/init.d/tomcat7") }
 end
-
