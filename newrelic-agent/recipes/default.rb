@@ -2,6 +2,7 @@ install_dir=node['tomcat']['install_dir']
 tomcat_user=node['tomcat']['tomcat_user']
 tomcat_group=node['tomcat']['tomcat_group']
 application = node[:opsworks][:instance][:hostname].chop
+country = node[:opsworks][:stack][:name][-2,2]
 
 cookbook_file "#{install_dir}/newrelic-java-3.31.0.zip" do
   source "newrelic-java-3.31.0.zip"
@@ -20,7 +21,7 @@ template "#{install_dir}/newrelic/newrelic.yml" do
   group 'apache'
   mode 0640
   variables({
-     :appname => "#{application}"
+     :appname => "#{application}_#{country}"
   })
   only_if { File.exists?("/usr/share/tomcat7/newrelic/newrelic.yml") }
 end
