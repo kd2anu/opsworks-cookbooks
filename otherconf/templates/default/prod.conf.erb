@@ -10,6 +10,6 @@
                 [ -d $lpath/<%=@APPNAME%> ] || mkdir -p $lpath/<%=@APPNAME%>
                 orig=$(find $lpath -regextype posix-awk -regex '.*/<%=@APPNAME%>.log.[0-9]{1,2}')
                 mv $orig $lpath/<%=@APPNAME%>/<%=@APPNAME%>_$ext.log
-                aws s3 cp $lpath/<%=@APPNAME%>/<%=@APPNAME%>_$ext.log s3://logs.dcoupon.com/prod/log<%=@CONTRACTORNUMBER%>/$rpath/<%=@APPNAME%><%=@NUMBER%>_$ext.log
+                aws s3 cp $lpath/<%=@APPNAME%>/<%=@APPNAME%>_$ext.log s3://logs.dcoupon.<%=@URLEXT%>/prod/log<%=@CONTRACTORNUMBER%>/$rpath/<%=@APPNAME%><%=@NUMBER%>_$ext.log
         endscript
 }

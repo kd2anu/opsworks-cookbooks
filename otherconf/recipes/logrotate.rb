@@ -21,6 +21,7 @@ end
 conf_dir="/opt/logrotate.d"
 number=node[:opsworks][:instance][:hostname][-1,1]
 webapp=node[:opsworks][:instance][:hostname].chop
+country=node[:opsworks][:stack][:name][-2,2]
 
 directory "#{conf_dir}" do
   owner "root"
@@ -35,6 +36,11 @@ elsif webapp == "api2campaignmgr" || webapp == "campaignmgr" || webapp == "mycou
   contractornumber="2"
 end
 
+if country == "us"
+  urlext="com"
+else
+  urlext="#{country}"
+
 puts "== Creating logrotate config and cronjob for #{webapp} =="
 # Create logrotate conf:
 template "#{conf_dir}/#{webapp}.conf" do
@@ -44,7 +50,8 @@ template "#{conf_dir}/#{webapp}.conf" do
   variables({
     :APPNAME => "#{webapp}",
     :NUMBER => "#{number}",
-    :CONTRACTORNUMBER => "#{contractornumber}"
+    :CONTRACTORNUMBER => "#{contractornumber}",
+    :URLEXT => "#{urlext}"
   })
 end
 
