@@ -40,6 +40,7 @@ if country == "us"
   urlext="com"
 else
   urlext="#{country}"
+end
 
 puts "== Creating logrotate config and cronjob for #{webapp} =="
 # Create logrotate conf:
