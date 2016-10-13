@@ -58,7 +58,16 @@ end
 
 # Create catalina.out conf:
 file "#{conf_dir}/tomcat.conf" do
-  content "@daily root /usr/sbin/logrotate -vf /opt/logrotate.d/tomcat.conf 2>&1 >> /var/log/logrotate.log"
+  content "/usr/share/tomcat7/logs/catalina.out {
+        copytruncate
+        dateext
+        daily
+        rotate 8
+        compress
+        missingok
+        size 2M
+}
+"
   mode '0744'
   owner 'root'
   group 'root'
