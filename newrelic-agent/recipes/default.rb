@@ -34,5 +34,6 @@ end
 
 service 'tomcat7' do
   action :restart
-  only_if { File.exists?("/etc/init.d/tomcat7") }
+  only_if {File.exists?("/etc/init.d/tomcat7")}
+  only_if %Q{/usr/bin/yum list installed tomcat-native 2>&1 >> /dev/null && true || false}
 end
