@@ -1,3 +1,12 @@
+zone = node[:dnszone]
+
+# Generate DB port check command if I'm dcoupon servers
+if ["dcoupon.eu","dcoupon.com"].include?(zone)
+  dbconn_chk_cmd="command[check_db_port]=/usr/local/nagios/libexec/check_tcp -H db.#{zone} -p 3306"
+else
+  dbconn_chk_cmd=""
+end
+
 package 'nrpe' do
   action :install
 end
@@ -7,6 +16,9 @@ template '/etc/nagios/nrpe.cfg' do
   owner 'root'
   group 'root'
   mode '0754'
+  variables({
+     :DBCONN_CHK_CMD => "#{dbconn_chk_cmd}"
+  })
 end
 
 remote_directory "/usr/local/nagios" do

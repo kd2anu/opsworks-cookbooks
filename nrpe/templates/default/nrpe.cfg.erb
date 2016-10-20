@@ -216,6 +216,7 @@ command[check_tomcat_current]=/usr/local/nagios/libexec/check_procs -c 1:1 -a <%
 command[check_httpconn]=/usr/local/nagios/libexec/check_httpconn
 command[check_users]=/usr/local/nagios/libexec/show_users.sh -w 2 -c 3
 command[check_health]=/usr/local/nagios/libexec/check_http -I 127.0.0.1 -p 8080 -u /healthcheck.html
+<%=@DBCONN_CHK_CMD%>
 
 # The following examples allow user-supplied arguments and can
 # only be used if the NRPE daemon was compiled with support for
