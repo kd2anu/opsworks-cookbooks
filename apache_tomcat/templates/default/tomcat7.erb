@@ -20,7 +20,7 @@ if [ -f /etc/sysconfig/tomcat7 ]; then
         . /etc/sysconfig/tomcat7
 fi
 
-CATALINA_HOME=<%=node['tomcat']['install_dir']%>
+CATALINA_HOME=/usr/share/tomcat7
 SHUTDOWN_WAIT=20
 
 tomcat_pid() {
@@ -31,11 +31,22 @@ start() {
         pid=$(tomcat_pid)
         if [ -n "$pid" ]
         then
-                echo -n "Tomcat is already running (pid: "
-                $SETCOLOR_SUCCESS
-                echo -n $pid
-                $SETCOLOR_NORMAL
-                echo ")"
+		if kill -0 $pid > /dev/null 2>&1
+		then
+	                echo -n "Tomcat is already running (pid: "
+        	        $SETCOLOR_SUCCESS
+                	echo -n $pid
+	                $SETCOLOR_NORMAL
+        	        echo ")"
+		else
+			rm -rf $CATALINA_HOME/bin/catalina.pid
+			# Start tomcat
+	                echo "Starting tomcat"
+        	        ulimit -n 100000
+                	umask 007
+	                /bin/su -p -s /bin/sh root $CATALINA_HOME/bin/startup.sh
+        	        echo_success
+		fi
         else
                 # Start tomcat
                 echo "Starting tomcat"
@@ -93,10 +104,17 @@ case $1 in
                 pid=$(tomcat_pid)
                 if [ -n "$pid" ]
                 then
-                        echo -n "Tomcat is running with pid: "
-                        $SETCOLOR_SUCCESS
-                        echo $pid
-                        $SETCOLOR_NORMAL
+	                if kill -0 $pid > /dev/null 2>&1
+			then
+        	                echo -n "Tomcat is running with pid: "
+                	        $SETCOLOR_SUCCESS
+                        	echo $pid
+	                        $SETCOLOR_NORMAL
+			else
+				rm -rf $CATALINA_HOME/bin/catalina.pid
+				echo "Tomcat is not running"
+	                        echo_failure && exit 1
+			fi
                 else
                         echo "Tomcat is not running"
                         echo_failure && exit 1
